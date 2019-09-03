@@ -62,5 +62,24 @@ server.get('/api/posts/:id/comments', (req, res) => {
     })
 })
 
+server.post('/api/posts/:id/comments', (req, res) => {
+  const postId = req.params.id
+  const newComment = req.body
+  newComment.post_id = postId
+  data.insertComment(newComment)
+    .then(comment => {
+      if (!comment) {
+        res.status(404).json({ message: "The post with the specified ID does not exist." })
+      } else if (!newComment.text) {
+        res.status(400).json({ errorMessage: "Please provide text for the comment." })
+      } else {
+        res.status(201).json(newComment)
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error: "There was an error while saving the comment to the database" })
+    })
+})
+
 const port = 8000;
 server.listen(port, () => console.log(`\n Server running on port ${port}`))
