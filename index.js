@@ -52,13 +52,31 @@ server.delete('/api/posts/:id', (req, res) => {
   data.remove(postId)
     .then(deleted => {
       if (deleted) {
-        res.status(200).json({ message: "The post has been successfully deleted." })
+        res.status(200).json(deleted)
       } else {
         res.status(404).json({ message: "The post with the specified ID does not exist." })
       }
     })
     .catch(error => {
       res.status(500).json({ error: "The post could not be removed." })
+    })
+})
+
+server.put('/api/posts/:id', (req, res) => {
+  const postId = req.params.id;
+  const updatedPost = req.body
+  data.update(postId, updatedPost)
+    .then(updated => {
+      if (!updatedPost.title) {
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+      } else if (!updatedPost.contents) {
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+      } else {
+        res.status(200).json(updatedPost)
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error: "The post information could not be modified." })
     })
 })
 
